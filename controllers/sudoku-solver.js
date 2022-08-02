@@ -11,21 +11,69 @@ class SudokuSolver {
     return {}
   }
 
-  checkRowPlacement(puzzleString, row, column, value) {
+  check(object) {
 
+    if (!object.puzzle || !object.value || !object.coordinate) {
+      return {error: 'Required field(s) missing'}
+    }
+
+    const { puzzle, value } = object
+    const coordinates = object.coordinate.split('')
+
+    if (coordinates.length != 2) {
+      return { error: "Invalid coordinate"}
+    }
+
+    const yCoordinate = coordinates[0]
+    const xCoordinate = coordinates[1]
+
+    if (Object.keys(this.validate(puzzle))[0] == 'error') {
+      return this.validate(puzzle)
+    }
+
+    const validYCoordinates = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I']
+    const validValue = []
+    for (let i = 1; i < 10; i++) {
+      validValue.push(i)
+    }
+
+    if (!this.verify(yCoordinate, validYCoordinates)) {
+      return { error: 'Invalid coordinate' }
+    }
+    if (!this.verify(xCoordinate, validValue)) {
+      return { error: 'Invalid coordinate' }
+    }
+    if (!this.verify(value, validValue)) {
+      return { error: 'Invalid value'}
+    }
+
+    let yValue
+    for (let i = 0; i < validYCoordinates.length; i++) {
+      if (yCoordinate == validYCoordinates[i]) {
+        yValue = i
+      }
+    }
+
+    const newGrid = this.makeGrid(puzzle)
+    if (this.possible(newGrid, yValue, xCoordinate - 1, value)) {
+      return { valid: true }
+    } else {
+      return {valid: false}
+    }
   }
 
-  checkColPlacement(puzzleString, row, column, value) {
-
-  }
-
-  checkRegionPlacement(puzzleString, row, column, value) {
-
+  verify(value, array) {
+    for (let i = 0; i < array.length; i++) {
+      if (value == array[i]) {
+        return true
+      } 
+    }
+    return false
   }
 
   solve(grid) {
 
-    let newGrid = grid.concat()
+    let newGrid = grid
 
     for (let y = 0; y < 9; y++) {
       for (let x = 0; x < 9; x++) {
@@ -75,6 +123,17 @@ class SudokuSolver {
     }
 
     return true
+  }
+
+  makeGrid(puzzle) {
+    const string = puzzle.replaceAll('.','0')
+    const grid = []
+    string.split('').forEach((value, index) => {
+      if ((index + 1) % 9 == 0) {
+        grid.push(string.split('').slice((index + 1) - 9, index + 1))
+      }
+    })
+    return grid.concat()
   }
 
 

@@ -9,6 +9,14 @@ module.exports = function (app) {
   app.route('/api/check')
     .post((req, res) => {
 
+      const check = solver.check(req.body)
+
+      // if (Object.keys(check)[0] == 'error') {
+      //   res.json(check)
+      //   return
+      // }
+
+      res.json(check)
     });
     
   app.route('/api/solve')
@@ -21,19 +29,11 @@ module.exports = function (app) {
       const validation = solver.validate(puzzle)
 
       if (Object.keys(validation)[0] == 'error') {
-        res.json(solver.validate(puzzle))
+        res.json(validation)
         return
       }
 
-      const string = puzzle.replaceAll('.','0')
-      const grid = []
-      string.split('').forEach((value, index) => {
-        if ((index + 1) % 9 == 0) {
-          grid.push(string.split('').slice((index + 1) - 9, index + 1))
-        }
-      })
-
-      let solution = solver.solve(grid)
+      let solution = solver.solve(solver.makeGrid(puzzle))
       if (!solution) {
         res.json({error: 'Puzzle cannot be solved'})
         return
