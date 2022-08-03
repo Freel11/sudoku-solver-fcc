@@ -94,6 +94,11 @@ class SudokuSolver {
   possible(array, y, x, n) {
 
     const conflict = []
+    let sameValue
+
+    if (array[y][x] == n) {
+      sameValue = true
+    }
 
     for (let i = 0; i < 9; i++) {
       if (array[y][i] == n) {
@@ -118,7 +123,9 @@ class SudokuSolver {
       }
     }
 
-    if (conflict.length > 0) {
+    if (sameValue) {
+      return { valid: true }
+    } else if (conflict.length > 0) {
       return { valid: false, conflict: conflict }
     } else {
       return { valid: true }
