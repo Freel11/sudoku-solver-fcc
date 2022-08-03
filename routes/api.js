@@ -11,11 +11,6 @@ module.exports = function (app) {
 
       const check = solver.check(req.body)
 
-      // if (Object.keys(check)[0] == 'error') {
-      //   res.json(check)
-      //   return
-      // }
-
       res.json(check)
     });
     
