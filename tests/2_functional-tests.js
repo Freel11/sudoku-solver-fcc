@@ -184,6 +184,20 @@ suite('Functional Tests', () => {
 					done()
 				})
 		})
+		test('check a puzzle placement with invalid placement coordinate', done => {
+			chai.request(server)
+				.post('/api/check')
+				.send({
+					puzzle: puzzleStrings.validInput,
+					coordinate: 'Z3',
+					value: '3'
+				})
+				.end((err, res) => {
+					assert.equal(res.status, 200)
+					assert.equal(res.body.error, "Invalid coordinate")
+					done()
+				})
+		})
 		test('check a puzzle placement with invalid placement value', done => {
 			chai.request(server)
 				.post('/api/check')
