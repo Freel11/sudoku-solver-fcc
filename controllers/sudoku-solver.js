@@ -55,11 +55,7 @@ class SudokuSolver {
     }
 
     const newGrid = this.makeGrid(puzzle)
-    if (this.possible(newGrid, yValue, xCoordinate - 1, value)) {
-      return { valid: true }
-    } else {
-      return {valid: false}
-    }
+    return this.possible(newGrid, yValue, xCoordinate - 1, value)
   }
 
   verify(value, array) {
@@ -79,7 +75,7 @@ class SudokuSolver {
       for (let x = 0; x < 9; x++) {
         if (newGrid[y][x] == '0') {
           for (let n = 1; n < 10; n++) {
-            if (this.possible(newGrid, y, x, n)) {
+            if (this.possible(newGrid, y, x, n).valid) {
               newGrid[y][x] = n
               if (this.solve(newGrid).varified) {
                 return {varified: true, grid: newGrid}
@@ -95,19 +91,19 @@ class SudokuSolver {
     return {varified: true, grid: newGrid}
   }
 
-
-
   possible(array, y, x, n) {
+
+    const conflict = []
 
     for (let i = 0; i < 9; i++) {
       if (array[y][i] == n) {
-        return false
+        conflict.push('row') 
       }
     }
 
     for (let i = 0; i < 9; i++) {
       if (array[i][x] == n) {
-        return false
+        conflict.push('column')
       }
     }
 
@@ -117,12 +113,17 @@ class SudokuSolver {
     for (let i = 0; i < 3; i++) {
       for (let j = 0; j < 3; j++) {
         if (array[y0 + i][x0 + j] == n) {
-          return false
+          conflict.push('region')
         }
       }
     }
 
-    return true
+    if (conflict.length > 0) {
+      return { valid: false, conflict: conflict }
+    } else {
+      return { valid: true }
+    }
+
   }
 
   makeGrid(puzzle) {
